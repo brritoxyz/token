@@ -5,6 +5,9 @@ import {Ownable} from "solady/auth/Ownable.sol";
 import {ERC20} from "solady/tokens/ERC20.sol";
 
 contract BRR is Ownable, ERC20 {
+    string private constant _NAME = "Fee printer go brr";
+    string private constant _SYMBOL = "BRR";
+
     // 1 billion (18 decimals)
     uint256 public maxSupply = 1_000_000_000e18;
 
@@ -19,18 +22,15 @@ contract BRR is Ownable, ERC20 {
     }
 
     function name() public pure override returns (string memory) {
-        return "BRR (Brrito.xyz)";
+        return _NAME;
     }
 
     function symbol() public pure override returns (string memory) {
-        return "BRR";
+        return _SYMBOL;
     }
 
     function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
-        // We are only allowing the max supply to be set to a lower value as a
-        // commitment to the community that we won't mint more tokens than needed.
         if (newMaxSupply > maxSupply) revert CannotIncreaseMaxSupply();
-
         if (newMaxSupply < totalSupply()) revert MaxSupplyLessThanTotal();
 
         maxSupply = newMaxSupply;
