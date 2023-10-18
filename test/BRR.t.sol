@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 
 import "forge-std/Test.sol";
 import {Ownable} from "solady/auth/Ownable.sol";
+import {ERC20} from "solady/tokens/ERC20.sol";
 import {BRR} from "src/BRR.sol";
 
 contract BRRTest is Test {
@@ -12,6 +13,7 @@ contract BRRTest is Test {
     BRR public immutable token = new BRR(address(this));
 
     event SetMaxSupply(uint256 newMaxSupply);
+    event Transfer(address indexed from, address indexed to, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
                              setMaxSupply
@@ -39,7 +41,7 @@ contract BRRTest is Test {
         token.setMaxSupply(newMaxSupply);
     }
 
-    function testCannotSetMaxSupplyMaxSupplyTooLow() external {
+    function testCannotSetMaxSupplyMaxSupplyLessThanTotal() external {
         uint256 totalSupply = 1;
 
         vm.store(address(token), _TOTAL_SUPPLY_SLOT, bytes32(totalSupply));
@@ -50,7 +52,7 @@ contract BRRTest is Test {
         uint256 newMaxSupply = totalSupply - 1;
 
         vm.prank(msgSender);
-        vm.expectRevert(BRR.MaxSupplyTooLow.selector);
+        vm.expectRevert(BRR.MaxSupplyLessThanTotal.selector);
 
         token.setMaxSupply(newMaxSupply);
     }
@@ -69,5 +71,85 @@ contract BRRTest is Test {
         token.setMaxSupply(newMaxSupply);
 
         assertEq(newMaxSupply, token.maxSupply());
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             mint
+    //////////////////////////////////////////////////////////////*/
+
+    function testCannotMintUnauthorized() external {
+        address msgSender = address(0);
+        address to = address(1);
+        uint256 amount = 1;
+
+        assertTrue(msgSender != token.owner());
+
+        vm.prank(msgSender);
+        vm.expectRevert(Ownable.Unauthorized.selector);
+
+        token.mint(to, amount);
+    }
+
+    function testCannotMintTotalSupplyExceedsMax() external {
+        address msgSender = token.owner();
+        address to = address(1);
+        uint256 amount = token.maxSupply() + 1;
+
+        vm.prank(msgSender);
+        vm.expectRevert(BRR.TotalSupplyExceedsMax.selector);
+
+        token.mint(to, amount);
+    }
+
+    function testCannotMintTotalSupplyOverflow() external {
+        address msgSender = token.owner();
+        address to = address(1);
+        uint256 amount = token.maxSupply();
+
+        vm.startPrank(msgSender);
+
+        token.mint(to, amount);
+
+        vm.expectRevert(ERC20.TotalSupplyOverflow.selector);
+
+        token.mint(to, type(uint256).max);
+
+        vm.stopPrank();
+    }
+
+    function testMint() external {
+        address msgSender = token.owner();
+        address to = address(1);
+        uint256 amount = 1;
+        uint256 toBalanceBefore = token.balanceOf(to);
+        uint256 totalSupplyBefore = token.totalSupply();
+
+        vm.prank(msgSender);
+        vm.expectEmit(true, true, false, true, address(token));
+
+        emit Transfer(address(0), to, amount);
+
+        token.mint(to, amount);
+
+        assertEq(toBalanceBefore + amount, token.balanceOf(to));
+        assertEq(totalSupplyBefore + amount, token.totalSupply());
+    }
+
+    function testMintFuzz(address to, uint96 amount) external {
+        vm.assume(amount < token.maxSupply());
+
+        address msgSender = token.owner();
+        uint256 toBalanceBefore = token.balanceOf(to);
+        uint256 totalSupplyBefore = token.totalSupply();
+
+        vm.prank(msgSender);
+        vm.expectEmit(true, true, false, true, address(token));
+
+        emit Transfer(address(0), to, amount);
+
+        token.mint(to, amount);
+
+        assertEq(toBalanceBefore + amount, token.balanceOf(to));
+        assertEq(totalSupplyBefore + amount, token.totalSupply());
     }
 }
