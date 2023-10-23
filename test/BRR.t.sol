@@ -7,6 +7,8 @@ import {ERC20} from "solady/tokens/ERC20.sol";
 import {BRR} from "src/BRR.sol";
 
 contract BRRTest is Test {
+    string private constant _NAME = "Fee printer go brr";
+    string private constant _SYMBOL = "BRR";
     bytes32 private constant _TOTAL_SUPPLY_SLOT =
         bytes32(uint256(0x05345cdf77eb68f44c));
 
@@ -14,6 +16,22 @@ contract BRRTest is Test {
 
     event SetMaxSupply(uint256 newMaxSupply);
     event Transfer(address indexed from, address indexed to, uint256 amount);
+
+    /*//////////////////////////////////////////////////////////////
+                             name
+    //////////////////////////////////////////////////////////////*/
+
+    function testName() external {
+        assertEq(_NAME, token.name());
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             symbol
+    //////////////////////////////////////////////////////////////*/
+
+    function testSymbol() external {
+        assertEq(_SYMBOL, token.symbol());
+    }
 
     /*//////////////////////////////////////////////////////////////
                              setMaxSupply
