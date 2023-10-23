@@ -18,17 +18,43 @@ contract BRR is Ownable, ERC20 {
     error TotalSupplyExceedsMax();
 
     constructor(address initialOwner) {
+        if (initialOwner == address(0)) revert NewOwnerIsZeroAddress();
+
         _initializeOwner(initialOwner);
     }
 
+    /**
+     * @notice Overridden to enforce 2-step ownership transfers.
+     */
+    function transferOwnership(address) public payable override {
+        revert Unauthorized();
+    }
+
+    /**
+     * @notice Overridden to enforce 2-step ownership transfers.
+     */
+    function renounceOwnership() public payable override {
+        revert Unauthorized();
+    }
+
+    /**
+     * @notice Token name.
+     */
     function name() public pure override returns (string memory) {
         return _NAME;
     }
 
+    /**
+     * @notice Token symbol.
+     */
     function symbol() public pure override returns (string memory) {
         return _SYMBOL;
     }
 
+    /**
+     * @notice Set the BRR max supply. Can only be set lower.
+     * @param  newMaxSupply  uint256  New max supply.
+     */
     function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
         if (newMaxSupply > maxSupply) revert CannotIncreaseMaxSupply();
         if (newMaxSupply < totalSupply()) revert MaxSupplyLessThanTotal();
@@ -38,6 +64,11 @@ contract BRR is Ownable, ERC20 {
         emit SetMaxSupply(newMaxSupply);
     }
 
+    /**
+     * @notice Mint BRR.
+     * @param  to      address  Token recipient.
+     * @param  amount  uint256  Token amount.
+     */
     function mint(address to, uint256 amount) external onlyOwner {
         // Safe since `_mint` throws if `totalSupply` overflows.
         unchecked {

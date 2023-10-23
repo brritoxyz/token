@@ -18,6 +18,26 @@ contract BRRTest is Test {
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
+                             transferOwnership
+    //////////////////////////////////////////////////////////////*/
+
+    function testCannotTransferOwnershipUnauthorized() external {
+        vm.expectRevert(Ownable.Unauthorized.selector);
+
+        token.transferOwnership(address(1));
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             renounceOwnership
+    //////////////////////////////////////////////////////////////*/
+
+    function testCannotRenounceOwnershipUnauthorized() external {
+        vm.expectRevert(Ownable.Unauthorized.selector);
+
+        token.renounceOwnership();
+    }
+
+    /*//////////////////////////////////////////////////////////////
                              name
     //////////////////////////////////////////////////////////////*/
 
