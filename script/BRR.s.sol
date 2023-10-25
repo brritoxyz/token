@@ -6,8 +6,13 @@ import {BRR} from "src/BRR.sol";
 
 contract BRRScript is Script {
     function run() public {
-        vm.broadcast(vm.envUint("PRIVATE_KEY"));
+        vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
 
-        new BRR(vm.envAddress("OWNER"));
+        BRR brr = new BRR(vm.envAddress("OWNER"));
+
+        // Mint 1 BRR token (18 decimals) to the deployer for future testing and development.
+        brr.mint(vm.envAddress("OWNER"), 1e18);
+
+        vm.stopBroadcast();
     }
 }

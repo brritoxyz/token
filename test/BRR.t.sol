@@ -128,13 +128,13 @@ contract BRRTest is Test {
         token.mint(to, amount);
     }
 
-    function testCannotMintTotalSupplyExceedsMax() external {
+    function testCannotMintMaxSupplyExceeded() external {
         address msgSender = token.owner();
         address to = address(1);
         uint256 amount = token.maxSupply() + 1;
 
         vm.prank(msgSender);
-        vm.expectRevert(BRR.TotalSupplyExceedsMax.selector);
+        vm.expectRevert(BRR.MaxSupplyExceeded.selector);
 
         token.mint(to, amount);
     }

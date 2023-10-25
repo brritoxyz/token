@@ -15,7 +15,7 @@ contract BRR is Ownable, ERC20 {
 
     error CannotIncreaseMaxSupply();
     error MaxSupplyLessThanTotal();
-    error TotalSupplyExceedsMax();
+    error MaxSupplyExceeded();
 
     constructor(address initialOwner) {
         if (initialOwner == address(0)) revert NewOwnerIsZeroAddress();
@@ -73,7 +73,7 @@ contract BRR is Ownable, ERC20 {
         // Safe since `_mint` throws if `totalSupply` overflows.
         unchecked {
             if (totalSupply() + amount > maxSupply)
-                revert TotalSupplyExceedsMax();
+                revert MaxSupplyExceeded();
         }
 
         _mint(to, amount);
