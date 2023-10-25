@@ -11,7 +11,7 @@ contract BRR is Ownable, ERC20 {
     // 1 billion (18 decimals)
     uint256 public maxSupply = 1_000_000_000e18;
 
-    event SetMaxSupply(uint256 newMaxSupply);
+    event DecreaseMaxSupply(uint256 newMaxSupply);
 
     error CannotIncreaseMaxSupply();
     error MaxSupplyLessThanTotal();
@@ -52,16 +52,16 @@ contract BRR is Ownable, ERC20 {
     }
 
     /**
-     * @notice Set the BRR max supply. Can only be set lower.
+     * @notice Decrease the BRR max supply.
      * @param  newMaxSupply  uint256  New max supply.
      */
-    function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
+    function decreaseMaxSupply(uint256 newMaxSupply) external onlyOwner {
         if (newMaxSupply > maxSupply) revert CannotIncreaseMaxSupply();
         if (newMaxSupply < totalSupply()) revert MaxSupplyLessThanTotal();
 
         maxSupply = newMaxSupply;
 
-        emit SetMaxSupply(newMaxSupply);
+        emit DecreaseMaxSupply(newMaxSupply);
     }
 
     /**

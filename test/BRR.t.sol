@@ -14,7 +14,7 @@ contract BRRTest is Test {
 
     BRR public immutable token = new BRR(address(this));
 
-    event SetMaxSupply(uint256 newMaxSupply);
+    event DecreaseMaxSupply(uint256 newMaxSupply);
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
@@ -54,10 +54,10 @@ contract BRRTest is Test {
     }
 
     /*//////////////////////////////////////////////////////////////
-                             setMaxSupply
+                             decreaseMaxSupply
     //////////////////////////////////////////////////////////////*/
 
-    function testCannotSetMaxSupplyUnauthorized() external {
+    function testCannotDecreaseMaxSupplyUnauthorized() external {
         address msgSender = address(0);
         uint256 newMaxSupply = 0;
 
@@ -66,20 +66,20 @@ contract BRRTest is Test {
         vm.prank(msgSender);
         vm.expectRevert(Ownable.Unauthorized.selector);
 
-        token.setMaxSupply(newMaxSupply);
+        token.decreaseMaxSupply(newMaxSupply);
     }
 
-    function testCannotSetMaxSupplyCannotIncreaseMaxSupply() external {
+    function testCannotDecreaseMaxSupplyCannotIncreaseMaxSupply() external {
         address msgSender = token.owner();
         uint256 newMaxSupply = token.maxSupply() + 1;
 
         vm.prank(msgSender);
         vm.expectRevert(BRR.CannotIncreaseMaxSupply.selector);
 
-        token.setMaxSupply(newMaxSupply);
+        token.decreaseMaxSupply(newMaxSupply);
     }
 
-    function testCannotSetMaxSupplyMaxSupplyLessThanTotal() external {
+    function testCannotDecreaseMaxSupplyMaxSupplyLessThanTotal() external {
         uint256 totalSupply = 1;
 
         vm.store(address(token), _TOTAL_SUPPLY_SLOT, bytes32(totalSupply));
@@ -92,10 +92,10 @@ contract BRRTest is Test {
         vm.prank(msgSender);
         vm.expectRevert(BRR.MaxSupplyLessThanTotal.selector);
 
-        token.setMaxSupply(newMaxSupply);
+        token.decreaseMaxSupply(newMaxSupply);
     }
 
-    function testSetMaxSupply() external {
+    function testDecreaseMaxSupply() external {
         address msgSender = token.owner();
         uint256 newMaxSupply = token.maxSupply() - 1;
 
@@ -104,9 +104,9 @@ contract BRRTest is Test {
         vm.prank(msgSender);
         vm.expectEmit(false, false, false, true, address(token));
 
-        emit SetMaxSupply(newMaxSupply);
+        emit DecreaseMaxSupply(newMaxSupply);
 
-        token.setMaxSupply(newMaxSupply);
+        token.decreaseMaxSupply(newMaxSupply);
 
         assertEq(newMaxSupply, token.maxSupply());
     }
