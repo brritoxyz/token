@@ -2,11 +2,12 @@
 pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
+import {BRR} from "src/BRR.sol";
 
 contract BRRScript is Script {
-    function setUp() public {}
-
     function run() public {
-        vm.broadcast();
+        vm.broadcast(vm.envUint("PRIVATE_KEY"));
+
+        new BRR(vm.envAddress("OWNER"));
     }
 }
