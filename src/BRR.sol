@@ -5,7 +5,7 @@ import {Ownable} from "solady/auth/Ownable.sol";
 import {ERC20} from "solady/tokens/ERC20.sol";
 
 contract BRR is Ownable, ERC20 {
-    string private constant _NAME = "Fee printer go brr";
+    string private constant _NAME = "Brrito";
     string private constant _SYMBOL = "BRR";
 
     // 1 billion (18 decimals)
