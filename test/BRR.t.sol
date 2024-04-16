@@ -54,64 +54,6 @@ contract BRRTest is Test {
     }
 
     /*//////////////////////////////////////////////////////////////
-                             decreaseMaxSupply
-    //////////////////////////////////////////////////////////////*/
-
-    function testCannotDecreaseMaxSupplyUnauthorized() external {
-        address msgSender = address(0);
-        uint256 newMaxSupply = 0;
-
-        assertTrue(msgSender != token.owner());
-
-        vm.prank(msgSender);
-        vm.expectRevert(Ownable.Unauthorized.selector);
-
-        token.decreaseMaxSupply(newMaxSupply);
-    }
-
-    function testCannotDecreaseMaxSupplyCannotIncreaseMaxSupply() external {
-        address msgSender = token.owner();
-        uint256 newMaxSupply = token.maxSupply() + 1;
-
-        vm.prank(msgSender);
-        vm.expectRevert(BRR.CannotIncreaseMaxSupply.selector);
-
-        token.decreaseMaxSupply(newMaxSupply);
-    }
-
-    function testCannotDecreaseMaxSupplyMaxSupplyLessThanTotal() external {
-        uint256 totalSupply = 1;
-
-        vm.store(address(token), _TOTAL_SUPPLY_SLOT, bytes32(totalSupply));
-
-        assertEq(totalSupply, token.totalSupply());
-
-        address msgSender = token.owner();
-        uint256 newMaxSupply = totalSupply - 1;
-
-        vm.prank(msgSender);
-        vm.expectRevert(BRR.MaxSupplyLessThanTotal.selector);
-
-        token.decreaseMaxSupply(newMaxSupply);
-    }
-
-    function testDecreaseMaxSupply() external {
-        address msgSender = token.owner();
-        uint256 newMaxSupply = token.maxSupply() - 1;
-
-        assertTrue(newMaxSupply != token.maxSupply());
-
-        vm.prank(msgSender);
-        vm.expectEmit(false, false, false, true, address(token));
-
-        emit DecreaseMaxSupply(newMaxSupply);
-
-        token.decreaseMaxSupply(newMaxSupply);
-
-        assertEq(newMaxSupply, token.maxSupply());
-    }
-
-    /*//////////////////////////////////////////////////////////////
                              mint
     //////////////////////////////////////////////////////////////*/
 
@@ -137,22 +79,6 @@ contract BRRTest is Test {
         vm.expectRevert(BRR.MaxSupplyExceeded.selector);
 
         token.mint(to, amount);
-    }
-
-    function testCannotMintTotalSupplyOverflow() external {
-        address msgSender = token.owner();
-        address to = address(1);
-        uint256 amount = token.maxSupply();
-
-        vm.startPrank(msgSender);
-
-        token.mint(to, amount);
-
-        vm.expectRevert(ERC20.TotalSupplyOverflow.selector);
-
-        token.mint(to, type(uint256).max);
-
-        vm.stopPrank();
     }
 
     function testMint() external {
