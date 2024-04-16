@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
 import {Ownable} from "solady/auth/Ownable.sol";
@@ -7,7 +7,7 @@ import {ERC20} from "solady/tokens/ERC20.sol";
 import {BRR} from "src/BRR.sol";
 
 contract BRRTest is Test {
-    string private constant _NAME = "Fee printer go brr";
+    string private constant _NAME = "Brrito";
     string private constant _SYMBOL = "BRR";
     bytes32 private constant _TOTAL_SUPPLY_SLOT =
         bytes32(uint256(0x05345cdf77eb68f44c));
