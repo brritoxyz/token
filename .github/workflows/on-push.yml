@@ -1,0 +1,28 @@
+name: forge-test
+
+on: [push]
+
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  check:
+    name: Foundry project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run Forge tests
+        env:
+          FOUNDRY_PROFILE: default
+          RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: |
+          forge test -vvv --fuzz-runs 1000 --rpc-url "$RPC_URL"
+        id: test
