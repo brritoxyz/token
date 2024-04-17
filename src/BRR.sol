@@ -11,10 +11,6 @@ contract BRR is Ownable, ERC20 {
     /// @notice Maximum amount of tokens which can be minted.
     uint256 public maxSupply = 1_000_000_000e18;
 
-    event DecreaseMaxSupply(uint256 newMaxSupply);
-
-    error CannotIncreaseMaxSupply();
-    error MaxSupplyLessThanTotal();
     error MaxSupplyExceeded();
 
     constructor(address initialOwner) {
